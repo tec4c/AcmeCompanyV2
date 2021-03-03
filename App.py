@@ -12,7 +12,7 @@ app = Flask(__name__)
 
 mysql = MySQL()
 
-# Configuración de la libreia mail para poder enviar email a los usuarios neuvos
+# Configuración de la libreia mail para poder enviar email a los usuarios nuevos
 app.config['MAIL_SERVER']='smtp.gmail.com'
 app.config['MAIL_PORT']=465
 app.config['MAIL_USE_SSL']=True
