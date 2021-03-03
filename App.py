@@ -12,7 +12,7 @@ app = Flask(__name__)
 
 mysql = MySQL()
 
-# Configuración del email
+# Configuración de la libreia mail para poder enviar email a los usuarios neuvos
 app.config['MAIL_SERVER']='smtp.gmail.com'
 app.config['MAIL_PORT']=465
 app.config['MAIL_USE_SSL']=True
@@ -26,7 +26,7 @@ mail = Mail(app)  # 2. Instanciamos un objeto de tipo Mail
 
 
 
-# Mysql Connection
+# Conexion Mysql 
 
 app.config['MYSQL_HOST'] = 'localhost' 
 app.config['MYSQL_USER'] = 'root'
@@ -44,7 +44,7 @@ app.secret_key = "key"
 
 # routes
 @app.route('/')
-def Index(): #esta fucniona sirve para cargar todos los datos de la tabla user y enviarselas al index.html
+def Index(): #esta funcion sirve para cargar todos los datos de la tabla user y enviarselas al index.html
     cur = mysql.connection.cursor()
     cur.execute('SELECT * FROM user')
     data = cur.fetchall()
@@ -54,7 +54,7 @@ def Index(): #esta fucniona sirve para cargar todos los datos de la tabla user y
 
 
 @app.route('/add_contact', methods=['POST'])
-def add_contact(): #agrega datos una table 
+def add_contact(): #agrega datos a la tabla usuarios en nuestras DB
       
     if request.method == 'POST':
         nombre = request.form['nombre']
@@ -67,7 +67,7 @@ def add_contact(): #agrega datos una table
         mysql.connection.commit()
         conex.close()
         comparar=True
-        for i in range(len(datos)):
+        for i in range(len(datos)): #esto sirve para validar si un correo ya esta en uso en nuestro registro caso no este en uso se agrega el nuevo registro
          if  email in datos[i]:
                flash("email en uso")
                comparar=False
@@ -90,7 +90,7 @@ def add_contact(): #agrega datos una table
                return redirect(url_for('Index'))
         else:
               return redirect(url_for('Index'))
-
+#esta funcion sirve para selecionar el usuario que se va editar por eso se envia los datos del usuario a otro template 
 @app.route('/edit/<id>', methods = ['POST', 'GET'])
 def get_contact(id):
     cur = mysql.connection.cursor()
@@ -99,7 +99,7 @@ def get_contact(id):
     cur.close()
     print(data[0])
     return render_template('edit-contact.html', contact = data[0])
-
+#funcion que actualiza los datos a cambiar de los usuarios
 @app.route('/update/<id>', methods=['POST'])
 def update_contact(id):
     if request.method == 'POST':
@@ -119,7 +119,7 @@ def update_contact(id):
         flash('Usuario modificado')
         mysql.connection.commit()
         return redirect(url_for('Index'))
-
+#funcion que elimina nuestros usuarios
 @app.route('/delete/<string:id>', methods = ['POST','GET'])
 def delete_contact(id):
     cur = mysql.connection.cursor()
@@ -129,6 +129,6 @@ def delete_contact(id):
     return redirect(url_for('Index'))
 
 
-# starting the app
+# inicializamos app
 if __name__ == "__main__":
     app.run(port=5500, debug=True)
